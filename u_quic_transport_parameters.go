@@ -5,8 +5,6 @@ import (
 	"encoding/binary"
 	"math"
 	"math/big"
-
-	"github.com/quic-go/quic-go/quicvarint"
 )
 
 const (
@@ -37,8 +35,8 @@ type TransportParameters []TransportParameter
 func (tps TransportParameters) Marshal() []byte {
 	var b []byte
 	for _, tp := range tps {
-		b = quicvarint.Append(b, tp.ID())
-		b = quicvarint.Append(b, uint64(len(tp.Value())))
+		b = Append(b, tp.ID())
+		b = Append(b, uint64(len(tp.Value())))
 		b = append(b, tp.Value()...)
 	}
 	return b
@@ -49,8 +47,8 @@ func (tps TransportParameters) Marshal() []byte {
 // Caller will write the following to the wire:
 //
 //	var b []byte
-//	b = quicvarint.Append(b, ID())
-//	b = quicvarint.Append(b, len(Value()))
+//	b = Append(b, ID())
+//	b = Append(b, len(Value()))
 //	b = append(b, Value())
 //
 // Therefore Value() should return the exact bytes to be written to the wire AFTER the length field,
@@ -111,7 +109,7 @@ func (MaxIdleTimeout) ID() uint64 {
 }
 
 func (m MaxIdleTimeout) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(m))
+	return Append([]byte{}, uint64(m))
 }
 
 type MaxUDPPayloadSize uint64
@@ -121,7 +119,7 @@ func (MaxUDPPayloadSize) ID() uint64 {
 }
 
 func (m MaxUDPPayloadSize) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(m))
+	return Append([]byte{}, uint64(m))
 }
 
 type InitialMaxData uint64
@@ -131,7 +129,7 @@ func (InitialMaxData) ID() uint64 {
 }
 
 func (i InitialMaxData) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type InitialMaxStreamDataBidiLocal uint64
@@ -141,7 +139,7 @@ func (InitialMaxStreamDataBidiLocal) ID() uint64 {
 }
 
 func (i InitialMaxStreamDataBidiLocal) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type InitialMaxStreamDataBidiRemote uint64
@@ -151,7 +149,7 @@ func (InitialMaxStreamDataBidiRemote) ID() uint64 {
 }
 
 func (i InitialMaxStreamDataBidiRemote) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type InitialMaxStreamDataUni uint64
@@ -161,7 +159,7 @@ func (InitialMaxStreamDataUni) ID() uint64 {
 }
 
 func (i InitialMaxStreamDataUni) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type InitialMaxStreamsBidi uint64
@@ -171,7 +169,7 @@ func (InitialMaxStreamsBidi) ID() uint64 {
 }
 
 func (i InitialMaxStreamsBidi) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type InitialMaxStreamsUni uint64
@@ -181,7 +179,7 @@ func (InitialMaxStreamsUni) ID() uint64 {
 }
 
 func (i InitialMaxStreamsUni) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(i))
+	return Append([]byte{}, uint64(i))
 }
 
 type MaxAckDelay uint64
@@ -191,7 +189,7 @@ func (MaxAckDelay) ID() uint64 {
 }
 
 func (m MaxAckDelay) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(m))
+	return Append([]byte{}, uint64(m))
 }
 
 type DisableActiveMigration struct{}
@@ -212,7 +210,7 @@ func (ActiveConnectionIDLimit) ID() uint64 {
 }
 
 func (a ActiveConnectionIDLimit) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(a))
+	return Append([]byte{}, uint64(a))
 }
 
 type InitialSourceConnectionID []byte // if empty, will be set to the Connection ID used for the Initial packet.
@@ -288,7 +286,7 @@ func (MaxDatagramFrameSize) ID() uint64 {
 }
 
 func (m MaxDatagramFrameSize) Value() []byte {
-	return quicvarint.Append([]byte{}, uint64(m))
+	return Append([]byte{}, uint64(m))
 }
 
 type GREASEQUICBit struct{}
