@@ -10,4 +10,3 @@ git rm -rf --ignore-unmatch \
   *.png
 
 go mod tidy
-go get -u all
