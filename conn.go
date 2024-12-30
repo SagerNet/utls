@@ -22,6 +22,10 @@ import (
 	"time"
 )
 
+type WriteCloser interface {
+	CloseWrite() error
+}
+
 // A Conn represents a secured connection.
 // It implements the net.Conn interface.
 type Conn struct {
@@ -162,6 +166,13 @@ func (c *Conn) SetWriteDeadline(t time.Time) error {
 // TLS session.
 func (c *Conn) NetConn() net.Conn {
 	return c.conn
+}
+
+func (c *Conn) CloseRawConnWrite() error {
+	if tcpConn, ok := c.conn.(WriteCloser); ok {
+		return tcpConn.CloseWrite()
+	}
+	return nil
 }
 
 // A halfConn represents one direction of the record layer
@@ -1466,6 +1477,7 @@ func (c *Conn) closeNotify() error {
 		c.closeNotifySent = true
 		// Any subsequent writes will fail.
 		c.SetWriteDeadline(time.Now())
+		c.CloseRawConnWrite()
 	}
 	return c.closeNotifyErr
 }
