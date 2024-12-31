@@ -171,8 +171,9 @@ func (c *Conn) NetConn() net.Conn {
 func (c *Conn) CloseRawConnWrite() error {
 	if tcpConn, ok := c.conn.(WriteCloser); ok {
 		return tcpConn.CloseWrite()
+	} else {
+		return c.SetWriteDeadline(time.Now())
 	}
-	return nil
 }
 
 // A halfConn represents one direction of the record layer
