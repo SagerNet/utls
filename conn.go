@@ -22,6 +22,10 @@ import (
 	"time"
 )
 
+type WriteCloser interface {
+	CloseWrite() error
+}
+
 // A Conn represents a secured connection.
 // It implements the net.Conn interface.
 type Conn struct {
@@ -155,6 +159,14 @@ func (c *Conn) SetReadDeadline(t time.Time) error {
 // After a [Conn.Write] has timed out, the TLS state is corrupt and all future writes will return the same error.
 func (c *Conn) SetWriteDeadline(t time.Time) error {
 	return c.conn.SetWriteDeadline(t)
+}
+
+func (c *Conn) CloseRawConnWrite() error {
+	if tcpConn, ok := c.conn.(WriteCloser); ok {
+		return tcpConn.CloseWrite()
+	} else {
+		return c.SetWriteDeadline(time.Now())
+	}
 }
 
 // NetConn returns the underlying connection that is wrapped by c.
@@ -1464,8 +1476,7 @@ func (c *Conn) closeNotify() error {
 		c.SetWriteDeadline(time.Now().Add(time.Second * 5))
 		c.closeNotifyErr = c.sendAlertLocked(alertCloseNotify)
 		c.closeNotifySent = true
-		// Any subsequent writes will fail.
-		c.SetWriteDeadline(time.Now())
+		c.CloseRawConnWrite()
 	}
 	return c.closeNotifyErr
 }
